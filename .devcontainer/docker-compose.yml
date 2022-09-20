@@ -20,9 +20,6 @@ services:
     # security_opt:
     #   - seccomp:unconfined
 
-    env_file:
-      - .env
-
     # Uncomment the next line to use a non-root user for all processes.
     user: vscode
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 

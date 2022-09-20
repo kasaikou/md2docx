@@ -16,4 +16,4 @@ Note backgrounds or reason why you create this issue.
 
 # Tips
 
-[new-issue]: https://github.com/streamwest-1629/repo_template/issues/new?template=enhancement.md&labels=enhancement
+[new-issue]: https://github.com/streamwest-1629/md2docx/issues/new?template=enhancement.md&labels=enhancement

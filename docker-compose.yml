@@ -1,0 +1,30 @@
+version: "3.0"
+services:
+  check_version:
+    build:
+      context: .
+      dockerfile: build.dockerfile
+    volumes:
+      - .:/src
+    command: /src/scripts/check_version.sh
+  init:
+    build:
+      context: .
+      dockerfile: build.dockerfile
+    volumes:
+      - .:/src
+    command: /src/scripts/init.sh
+  tidy:
+    build:
+      context: .
+      dockerfile: build.dockerfile
+    volumes:
+      - .:/src
+    command: /src/scripts/tidy.sh
+  build:
+    build:
+      context: .
+      dockerfile: build.dockerfile
+    volumes:
+      - .:/src
+    command: /src/scripts/build.sh

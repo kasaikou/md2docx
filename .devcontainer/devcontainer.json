@@ -18,8 +18,15 @@
                 "mhutchie.git-graph",
                 "eamodio.gitlens",
                 "golang.go",
+                "ms-python.python",
                 "ms-azuretools.vscode-docker"
-            ]
+            ],
+            "settings": {
+                "editor.formatOnSave": true,
+                "python.linting.mypyEnabled": true,
+                "python.linting.flake8Enabled": true,
+                "python.formatting.provider": "yapf"
+            }
         }
     },
     // Use 'forwardPorts' to make a list of ports inside the container available locally.

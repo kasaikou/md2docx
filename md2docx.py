@@ -10,10 +10,24 @@ import os
 import os.path
 import re
 import regex
+import sys
 
-filepath: str = "./example/test1.md"
-destpath: str = "./example/test1.docx"
-markdown: str = ""
+filepath: str = ""
+destpath: str = ""
+
+if len(sys.argv) == 1:
+    print("source markdown file is required")
+    exit(1)
+elif len(sys.argv) == 2:
+    filepath = sys.argv[1]
+    destpath = sys.argv[1].replace(".md", ".docx")
+else:
+    filepath = sys.argv[1]
+    destpath = sys.argv[2]
+
+filepath = os.path.join(os.getcwd(), filepath)
+destpath = os.path.join(os.getcwd(), destpath)
+
 with open(filepath, "r") as f:
     markdown = f.read()
 lines = markdown.splitlines()

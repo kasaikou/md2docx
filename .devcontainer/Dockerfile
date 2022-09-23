@@ -32,6 +32,12 @@ RUN \
     zip \
     unzip \
     python3-pip \
+    evince \
+    texlive-fonts-extra \
+    texlive-fonts-recommended \
+    texlive-lang-cjk \
+    xdvik-ja \
+    dvipng \
     wget \
     sudo && \
     #
@@ -49,3 +55,7 @@ RUN \
     chown -R ${username} /opt
 
 USER ${username}
+RUN python3 -m pip install \
+    mypy \
+    yapf
+

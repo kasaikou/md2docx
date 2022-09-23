@@ -39,7 +39,7 @@ Wordはマイクロソフトが販売しているソフトウェアです．い�
 
 ![Stable Diffusionを用いて生成した画像](./image-1.png)
 
-![Stable Diffusionの生成画像にReal-ESRGANを適用した画像](./image-2.jpg)
+![Stable Diffusionの生成画像にReal-ESRGANを適用した画像](./image-2.png)
 
 ![Stable Diffusionの生成画像にDALLE-2のOutpainting, Real-ESRGANを適用した画像](./image-3.png)
 
@@ -47,8 +47,8 @@ Wordはマイクロソフトが販売しているソフトウェアです．い�
 Latex表記はブロックのみサポートします．互換性の観点から，Word内には画像として出力します．
 $$
 E = mc^2 \\
-E: エネルギー m: 質量 c: 光速 \\
 $$
+E: エネルギー m: 質量 c: 光速
 
 ## 参考文献（脚注）
 参考文献を追加するための機能です．出力ではシンプルな文書内ナンバリングと執筆者別ナンバリングをサポートしますが，Markdown記述時は執筆者別ナンバリングが採用されます．

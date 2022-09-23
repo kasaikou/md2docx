@@ -25,6 +25,7 @@ RUN \
     build-essential \
     curl \
     ca-certificates \
+    ccache \
     lsb-release \
     pkg-config \
     gnupg \
@@ -32,7 +33,10 @@ RUN \
     zip \
     unzip \
     python3-pip \
+    python3-dev \
+    patchelf \
     evince \
+    texlive-latex-extra \
     texlive-fonts-extra \
     texlive-fonts-recommended \
     texlive-lang-cjk \
@@ -55,6 +59,9 @@ RUN \
     chown -R ${username} /opt
 
 USER ${username}
+COPY requirements.lock .
+RUN python3 -m pip install -r requirements.lock
+
 RUN python3 -m pip install \
     mypy \
     yapf

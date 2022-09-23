@@ -14,7 +14,7 @@ jobs:
       - name: Check update
         run: |
           git fetch
-          echo "UPDATE_FILES_NUM=$(git diff --name-only refs/heads/main...refs/heads/release | wc -l)" >> $GITHUB_ENV
+          echo "UPDATE_FILES_NUM=$(git diff --name-only remotes/origin/main...release | wc -l)" >> $GITHUB_ENV
       - name: Merge
         if: ${{ env.UPDATE_FILES_NUM > 0 }}
         run: |

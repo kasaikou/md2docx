@@ -14,13 +14,15 @@ jobs:
       - name: Check update
         run: |
           git fetch
-          echo "UPDATE_FILES_NUM=$(git diff --name-only remotes/origin/main...release | wc -l)" >> $GITHUB_ENV
+          export UPDATED=$(git diff --name-only main...release | wc -l)
+          echo "UPDATE_FILES_NUM=${UPDATED}" >> $GITHUB_ENV
+          echo "detected ${UPDATED} updated files."
       - name: Merge
         if: ${{ env.UPDATE_FILES_NUM > 0 }}
         run: |
           git config user.email github-actions[bot]@users.noreply.github.com
           git config user.name github-actions[bot]
-          git merge refs/heads/main
+          git merge main
           git push
         env:
           TZ: Asia/Tokyo

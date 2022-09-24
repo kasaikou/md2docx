@@ -32,4 +32,4 @@ jobs:
       - name: Pip install
         run: pip install -r requirements.lock
       - name: Run Pyinstaller
-        run: python3 -m pyinstaller --onefile md2dox.py
+        run: pyinstaller --onefile md2dox.py

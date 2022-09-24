@@ -1,0 +1,25 @@
+name-template: v$RESOLVED_VERSION released!🎉
+tag-template: v$RESOLVED_VERSION
+categories:
+  - title: 🚀 Improve changes
+    labels: 
+      - enhancement
+  - title: 🎃 Fix bugs
+    labels: 
+      - bug
+change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
+version-resolver:
+  major:
+    labels:
+      - major
+  minor:
+    labels:
+      - minor
+  patch:
+    labels:
+      - patch
+  default: patch
+template: |
+  ## changes
+
+  $CHANGES

@@ -3,6 +3,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: 0 0 1 * ?
+  pull_request:
+    branches:
+      - main
 jobs:
   update_branch:
     runs-on: ubuntu-latest
@@ -26,3 +29,62 @@ jobs:
           git push origin release
         env:
           TZ: Asia/Tokyo
+  publish:
+    needs: update_branch
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: refs/heads/release
+      - name: Generate tag
+        run: echo "TAG=v$(date +'%Y.%m.%d%H%M%S')" >> $GITHUB_ENV
+        env:
+          TZ: Asia/Tokyo
+      - name: Create a draft release
+        run: |
+          gh release create \
+            --title "${{ env.TAG }} released!" \
+            --target release \
+            --generate-notes \
+            --prerelease \
+            ${{ env.TAG }}
+    outputs:
+      tag: ${{ env.TAG }}
+  build:
+    needs: publish
+    strategy:
+      matrix:
+        target:
+          - linux-x86_64
+          - windows-x86_64
+          - macos-x86_64
+        include:
+          - target: linux-x86_64
+            os: ubuntu-20.04
+          - target: windows-x86_64
+            os: windows-2019
+          - target: macos-x86_64
+            os: macos-11
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: refs/heads/release
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+          cache: pip
+      - name: Pip install
+        run: pip install -r requirements.lock
+      - name: Run Pyinstaller
+        run: pyinstaller --onefile md2docx.py
+      - name: Make artifact
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r md2docx-${{ matrix.target }}.zip dist
+      - name: Upload release
+        run: |
+          gh release upload ${{ needs.publish.outputs.tag }} md2docx-${{ matrix.target }}.zip

@@ -16,7 +16,7 @@ jobs:
             os: ubuntu-20.04
           - target: windows-x86_64
             os: windows-2019
-          - target: macos-x64_64
+          - target: macos-x86_64
             os: macos-11
     runs-on: ${{ matrix.os }}
     steps:

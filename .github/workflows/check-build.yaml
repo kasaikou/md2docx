@@ -41,22 +41,22 @@ jobs:
           type: zip
           filename: md2docx-${{ matrix.target }}.zip
           directory: dist
-      - name: Install for testing example in Ubuntu
-        if: ${{ contains(matrix.os, 'ubuntu') }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            patchelf \
-            evince \
-            texlive-latex-extra \
-            texlive-fonts-extra \
-            texlive-fonts-recommended \
-            texlive-lang-cjk \
-            xdvik-ja \
-            dvipng
-      - name: Install for testing example in Macos
-        if: ${{ contains(matrix.os, 'macos') }}
-        run: |
-          brew install --cask mactex-no-gui
-      - name: Testing example
-        run: ./dist/md2docx ./example/test1.md
+      # - name: Install for testing example in Ubuntu
+      #   if: ${{ contains(matrix.os, 'ubuntu') }}
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y \
+      #       patchelf \
+      #       evince \
+      #       texlive-latex-extra \
+      #       texlive-fonts-extra \
+      #       texlive-fonts-recommended \
+      #       texlive-lang-cjk \
+      #       xdvik-ja \
+      #       dvipng
+      # - name: Install for testing example in Macos
+      #   if: ${{ contains(matrix.os, 'macos') }}
+      #   run: |
+      #     brew install --cask mactex-no-gui
+      # - name: Testing example
+      #   run: ./dist/md2docx ./example/test1.md

@@ -1,0 +1,6 @@
+changelog:
+  categories:
+    - title: Improve changes 🚀
+      labels: enhancement
+    - title: Fix bugs 🎃
+      labels: bug

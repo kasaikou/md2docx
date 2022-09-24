@@ -1,0 +1,36 @@
+name: Check build in all os
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    needs: publish
+    strategy:
+      matrix: 
+        target:
+          - linux-x86_64
+          - windows-x86_64
+          - macos-x86_64
+        include:
+          - target: linux-x86_64
+            os: ubuntu-20.04
+          - target: windows-x86_64
+            os: windows-2019
+          - target: macos-x64_64
+            os: macos-11
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: refs/heads/release
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+          cache: pip
+      - name: Pip install
+        run: pip install -r requirements.lock
+      - name: Run Pyinstaller
+        run: python3 -m pyinstaller --onefile md2dox.py

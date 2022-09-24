@@ -32,6 +32,8 @@ jobs:
   publish:
     needs: update_branch
     runs-on: ubuntu-20.04
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -49,6 +51,8 @@ jobs:
             --generate-notes \
             --prerelease \
             ${{ env.TAG }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       tag: ${{ env.TAG }}
   build:
@@ -67,6 +71,8 @@ jobs:
           - target: macos-x86_64
             os: macos-11
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -88,3 +94,5 @@ jobs:
       - name: Upload release
         run: |
           gh release upload ${{ needs.publish.outputs.tag }} md2docx-${{ matrix.target }}.zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

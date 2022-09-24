@@ -78,16 +78,18 @@ jobs:
         run: pip install -r requirements.lock
       - name: Run Pyinstaller
         run: pyinstaller --onefile md2docx.py
-      - name: Make artifact
-        uses: montudor/action-zip@v1
+      - name: Zip archive
+        uses: thedoctor0/zip-release@main
         with:
-          args: zip -qq -r md2docx-${{ matrix.target }}.zip dist
+          type: zip
+          filename: md2docx-${{ matrix.target }}.zip
+          directory: dist
       - name: Upload release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ needs.publish.outputs.upload_url }}
-          asset_path: md2docx-${{ matrix.target }}.zip
-          asset_name: md2docx-${{ matrix.target }}.zip
+          asset_path: ./dist/md2docx-${{ matrix.target }}.zip
+          asset_name: ./dist/md2docx-${{ matrix.target }}.zip
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

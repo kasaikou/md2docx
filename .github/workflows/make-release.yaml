@@ -42,7 +42,7 @@ jobs:
           ref: refs/heads/release
       - name: Publish a draft release
         id: release
-        uses: 
+        uses: release-drafter/release-drafter@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:

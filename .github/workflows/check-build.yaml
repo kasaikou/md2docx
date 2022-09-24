@@ -43,7 +43,7 @@ jobs:
           filename: md2docx-${{ matrix.target }}.zip
           directory: dist
       - name: Install for testing example in Ubuntu
-        if: ${{ contains(matrix.os, "ubuntu") }}
+        if: ${{ contains(matrix.os, 'ubuntu') }}
         run: |
           apt-get update
           apt-get install -y \

@@ -38,5 +38,5 @@ jobs:
         with:
           type: zip
           filename: md2docx-${{ matrix.target }}.zip
-          dirname: dist
+          directly: dist
       - run: ls -al ./dist

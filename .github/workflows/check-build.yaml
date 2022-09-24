@@ -33,3 +33,9 @@ jobs:
         run: pip install -r requirements.lock
       - name: Run Pyinstaller
         run: pyinstaller --onefile md2docx.py
+      - name: Zip archive
+        uses: thedoctor0/zip-release@main
+        with:
+          type: zip
+          filename: md2docx-${{ matrix.target }}.zip
+          directory: dist

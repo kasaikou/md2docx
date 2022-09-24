@@ -43,4 +43,4 @@ jobs:
           filename: md2docx-${{ matrix.target }}.zip
           directory: dist
       - name: Testing example
-        run: ./dist/md2docx ./example/test1.docx
+        run: ./dist/md2docx ./example/test1.md

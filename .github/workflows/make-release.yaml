@@ -45,9 +45,8 @@ jobs:
           TZ: Asia/Tokyo
       - name: Create a draft release
         run: |
-          git tag ${{ env.TAG }}
-          git push origin ${{ env.TAG }}
-          gh release create ${{ env.TAG }} --title "${{ env.TAG }} released!" --target release --generate-notes --draft
+          gh release list
+          gh release create ${{ env.TAG }} --title "${{ env.TAG }} released!" --target release --generate-notes --draft --repo streamwest-1629/md2docx
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:

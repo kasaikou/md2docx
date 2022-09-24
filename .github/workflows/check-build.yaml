@@ -6,6 +6,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix: 
         target:
           - linux-x86_64
@@ -55,5 +56,9 @@ jobs:
             texlive-lang-cjk \
             xdvik-ja \
             dvipng
+      - name: Install for testing example in Macos
+        if: ${{ contains(matrix.os, 'ubuntu') }}
+        run: |
+          brew install mactex
       - name: Testing example
         run: ./dist/md2docx ./example/test1.md

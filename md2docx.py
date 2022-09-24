@@ -28,8 +28,8 @@ else:
 filepath = os.path.join(os.getcwd(), filepath)
 destpath = os.path.join(os.getcwd(), destpath)
 
-with open(filepath, "r") as f:
-    markdown = f.read()
+with open(filepath, "rb") as f:
+    markdown = f.read().decode('utf-8')
 lines = markdown.splitlines()
 i = 0
 

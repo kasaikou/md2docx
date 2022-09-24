@@ -1,4 +1,4 @@
-name: Check build in all os
+name: Check build and test in all os
 on:
   pull_request:
     branches:
@@ -6,6 +6,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix: 
         target:
           - linux-x86_64
@@ -19,11 +20,12 @@ jobs:
           - target: macos-x86_64
             os: macos-11
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          ref: refs/heads/release
       - name: Install Python
         uses: actions/setup-python@v4
         with:
@@ -39,3 +41,22 @@ jobs:
           type: zip
           filename: md2docx-${{ matrix.target }}.zip
           directory: dist
+      # - name: Install for testing example in Ubuntu
+      #   if: ${{ contains(matrix.os, 'ubuntu') }}
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y \
+      #       patchelf \
+      #       evince \
+      #       texlive-latex-extra \
+      #       texlive-fonts-extra \
+      #       texlive-fonts-recommended \
+      #       texlive-lang-cjk \
+      #       xdvik-ja \
+      #       dvipng
+      # - name: Install for testing example in Macos
+      #   if: ${{ contains(matrix.os, 'macos') }}
+      #   run: |
+      #     brew install --cask mactex-no-gui
+      # - name: Testing example
+      #   run: ./dist/md2docx ./example/test1.md

@@ -45,8 +45,8 @@ jobs:
       - name: Install for testing example in Ubuntu
         if: ${{ contains(matrix.os, 'ubuntu') }}
         run: |
-          apt-get update
-          apt-get install -y \
+          sudo apt-get update
+          sudo apt-get install -y \
             patchelf \
             evince \
             texlive-latex-extra \

@@ -35,6 +35,7 @@ jobs:
           - linux-x86_64
           - windows-x86_64
           - macos-x86_64
+        os: []
         include:
           - target: linux-x86_64
             os: ubuntu-20.04

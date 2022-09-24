@@ -3,9 +3,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: 0 0 1 * ?
-  pull_request:
-    branches:
-      - main
 jobs:
   update_branch:
     runs-on: ubuntu-latest
@@ -43,11 +40,14 @@ jobs:
       - name: Publish a draft release
         id: release
         uses: release-drafter/release-drafter@v5
+        with:
+          commitish: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
   build:
+    if: ${{ steps.release.outputs.upload_url != "" }}
     needs: publish
     strategy:
       matrix:

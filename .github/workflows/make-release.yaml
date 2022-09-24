@@ -89,7 +89,7 @@ jobs:
         with:
           upload_url: ${{ needs.publish.outputs.upload_url }}
           asset_path: ./dist/md2docx-${{ matrix.target }}.zip
-          asset_name: ./dist/md2docx-${{ matrix.target }}.zip
+          asset_name: md2docx-${{ matrix.target }}.zip
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

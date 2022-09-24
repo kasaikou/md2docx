@@ -57,7 +57,7 @@ jobs:
             xdvik-ja \
             dvipng
       - name: Install for testing example in Macos
-        if: ${{ contains(matrix.os, 'ubuntu') }}
+        if: ${{ contains(matrix.os, 'macos') }}
         run: |
           brew install mactex
       - name: Testing example

@@ -34,23 +34,19 @@ jobs:
     runs-on: ubuntu-20.04
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           ref: refs/heads/release
-      - name: Generate tag
-        run: echo "TAG=v$(date +'%Y.%m.%d%H%M')" >> $GITHUB_ENV
-        env:
-          TZ: Asia/Tokyo
-      - name: Create a draft release
-        run: |
-          gh release list
-          gh release create ${{ env.TAG }} --title "${{ env.TAG }} released!" --target release --generate-notes --draft --repo streamwest-1629/md2docx
+      - name: Publish a draft release
+        id: release
+        uses: 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
-      tag: ${{ env.TAG }}
+      upload_url: ${{ steps.release.outputs.upload_url }}
   build:
     needs: publish
     strategy:
@@ -88,7 +84,11 @@ jobs:
         with:
           args: zip -qq -r md2docx-${{ matrix.target }}.zip dist
       - name: Upload release
-        run: |
-          gh release upload ${{ needs.publish.outputs.tag }} md2docx-${{ matrix.target }}.zip
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.publish.outputs.upload_url }}
+          asset_path: md2docx-${{ matrix.target }}.zip
+          asset_name: md2docx-${{ matrix.target }}.zip
+          asset_content_type: application/zip

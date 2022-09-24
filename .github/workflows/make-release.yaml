@@ -47,7 +47,7 @@ jobs:
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
   build:
-    if: ${{ steps.release.outputs.upload_url != "" }}
+    if: ${{ needs.publish.outputs.upload_url != "" }}
     needs: publish
     strategy:
       matrix:

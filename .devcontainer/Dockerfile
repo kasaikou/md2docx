@@ -1,8 +1,8 @@
 FROM ubuntu:20.04
 
 LABEL maintainer="Kasai Kou"
-
 ARG apt_get_server=ftp.jaist.ac.jp/pub/Linux
+ARG NODEJS_VERSION=14.x
 ARG golang_version=1.18
 ARG username=vscode
 ARG useruid=1000
@@ -14,7 +14,10 @@ ENV LANG=C.UTF-8
 ENV GOPATH=/home/${username}/go
 ENV PATH=${PATH}:/usr/local/go/bin
 ENV PATH=${PATH}:${GOPATH}/bin
+ENV PATH=${PATH}:/home/${username}/.yarn/bin
 ENV SHELL=/bin/bash
+ENV CHROME_BIN=/usr/bin/chromium-browser
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 WORKDIR /opt
 RUN \
@@ -43,13 +46,15 @@ RUN \
     xdvik-ja \
     dvipng \
     wget \
+    nodejs \
+    npm \
     sudo && \
     #
-    # Install docker
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-    apt-get update && \
-    apt-get install -y docker-ce docker-ce-cli containerd.io && \
+    # Install mermaid
+    npm install --global yarn && \
+    yarn global add --production puppeteer mermaid.cli && \
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    dpkg -i google-chrome-stable_current_amd64.deb && \
     #
     # Create non-root user: https://aka.ms/vscode-remote/containers/non-root-user
     groupadd --gid ${usergid} ${username} && \
@@ -66,3 +71,4 @@ RUN python3 -m pip install \
     mypy \
     yapf
 
+COPY puppeteer-config.json .

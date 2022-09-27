@@ -46,6 +46,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
+      tag: ${{ steps.release.outputs.tag_name }}
   build:
     needs: publish
     strategy:
@@ -85,11 +86,6 @@ jobs:
           filename: md2docx-${{ matrix.target }}.zip
           directory: dist
       - name: Upload release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ needs.publish.outputs.upload_url }}
-          asset_path: ./dist/md2docx-${{ matrix.target }}.zip
-          asset_name: md2docx-${{ matrix.target }}.zip
-          asset_content_type: application/zip
+        run: gh release upload ${{ needs.publish.outputs.tag_name }} ./dist/md2docx-${{ matrix.target }}.zip --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -10,6 +10,7 @@ import os
 import os.path
 import re
 import regex
+import subprocess
 import sys
 
 filepath: str = ""
@@ -52,6 +53,7 @@ config: Final = yaml.safe_load("\n".join(yaml_header_lines))
 LINE_TYPE_EMPTY = "empty"
 LINE_TYPE_NEWPAGE = "newpage"
 LINE_TYPE_LATEX = "latex"
+LINE_TYPE_MERMAID = "mermaid"
 LINE_TYPE_IMAGE = "image"
 LINE_TYPE_LIST = "list"
 LINE_TYPE_HEADING = "heading"
@@ -83,6 +85,21 @@ with tqdm(total=len(lines), desc="parsing markdown") as progress:
                 i += 1
             content = f"$$\n{content}\n$$"
             line_infos.append(LineInfo(LINE_TYPE_LATEX, {"content": content}))
+        elif lines[i].startswith("```"):
+            if lines[i][3:].startswith("mermaid"):
+                matches = re.match("\[([^\[\]]+)\]", lines[i][10:])
+                if matches is not None:
+                    content = ""
+                    i += 1
+                    while i < len(lines) and lines[i] != "```":
+                        content += lines[i] + "\n"
+                        i += 1
+                    line_infos.append(
+                        LineInfo(LINE_TYPE_MERMAID, {
+                            "content": content,
+                            "desc": matches.groups()[0],
+                        }))
+
         elif re.fullmatch("(\*|-|\+) \s+", lines[i]) is not None:
             line_infos.append(
                 LineInfo(LINE_TYPE_LIST, {
@@ -265,6 +282,49 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
             paragraph = dest.add_paragraph("")
             paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             paragraph.add_run().add_picture(image_bin)
+
+        if line_infos[i].kind == LINE_TYPE_MERMAID:
+            content = line_infos[i].content["content"]
+            mmd_filename = f"./{i}.mmd"
+            filename = f"./{i}.png"
+            with open(mmd_filename, "xt", encoding="utf-8") as f:
+                print(content, file=f)
+            with open("puppeteer-config.json", "xt", encoding="utf-8") as f:
+                print("""
+                {
+                    "executablePath": "/usr/bin/google-chrome",
+                    "args": [
+                        "--no-sandbox"
+                    ]
+                }
+                """,
+                      file=f)
+            completed = subprocess.run([
+                "mmdc",
+                "-i",
+                mmd_filename,
+                "-o",
+                filename,
+                "-p",
+                "puppeteer-config.json",
+            ])
+            completed.check_returncode()
+            description = f"Figure {i_headings[0]}-{i_image}: {line_infos[i].content['desc']}"
+
+            paragraph = dest.add_paragraph("")
+            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            paragraph.add_run().add_picture(filename)
+            paragraph = dest.add_paragraph("")
+            paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+            spliteds = split_jpn(replace_expr(description))
+            for splited in spliteds:
+                paragraph.add_run(splited["content"]).font.name = select_font(
+                    splited["region"], False)
+            i_image += 1
+
+            os.remove(mmd_filename)
+            os.remove(filename)
+            os.remove("puppeteer-config.json")
 
         if line_infos[i].kind == LINE_TYPE_REFERENCE:
             key = f"[{line_infos[i].content['key']}]"

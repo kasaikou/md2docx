@@ -46,7 +46,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
-      tag: ${{ steps.release.outputs.tag_name }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
   build:
     needs: publish
     strategy:

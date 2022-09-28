@@ -54,7 +54,7 @@ RUN \
     npm install --global yarn && \
     yarn global add --production puppeteer mermaid.cli && \
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    apt-get install -y ./google-chrome-stable_current_amd64.deb && \
+    dpkg -i google-chrome-stable_current_amd64.deb && \
     #
     # Create non-root user: https://aka.ms/vscode-remote/containers/non-root-user
     groupadd --gid ${usergid} ${username} && \

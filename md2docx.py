@@ -223,13 +223,13 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
         progress.update(i)
 
         if line_infos[i].kind == LINE_TYPE_IMAGE:
-            description = f"Figure {i_headings[0]}-{i_image}: {line_infos[i].content['desc']}"
+            description = f"Figure {i_headings[0]}.{i_image}. {line_infos[i].content['desc']}"
             path = os.path.join(os.path.dirname(filepath),
                                 line_infos[i].content["path"])
 
             paragraph = dest.add_paragraph("")
             paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            paragraph.add_run().add_picture(path, width=Inches(3.5))
+            paragraph.add_run().add_picture(path, width=Inches(5))
             paragraph = dest.add_paragraph("")
             paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             spliteds = split_jpn(replace_expr(description))
@@ -262,7 +262,7 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
 
             numbering = f"{i_headings[0]}"
             for i_heading in i_headings[1:level]:
-                numbering = f"{numbering}-{i_heading}"
+                numbering = f"{numbering}.{i_heading}"
             spliteds = split_jpn(
                 replace_expr(
                     f"""{numbering}. {line_infos[i].content["content"]}"""))
@@ -299,6 +299,16 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
                 }
                 """,
                       file=f)
+            with open("mermaid.css", "xt", encoding="utf-8") as f:
+                print("""
+                .mermaid {
+                    height: 60% !important;
+                }
+                .label {
+                    font-size: 10.5px !important;
+                }
+                """,
+                      file=f)
             completed = subprocess.run([
                 "mmdc",
                 "-i",
@@ -307,9 +317,13 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
                 filename,
                 "-p",
                 "puppeteer-config.json",
+                "-C",
+                "mermaid.css",
+                "-H",
+                "1200",
             ])
             completed.check_returncode()
-            description = f"Figure {i_headings[0]}-{i_image}: {line_infos[i].content['desc']}"
+            description = f"Figure {i_headings[0]}.{i_image}. {line_infos[i].content['desc']}"
 
             paragraph = dest.add_paragraph("")
             paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
@@ -325,6 +339,7 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
             os.remove(mmd_filename)
             os.remove(filename)
             os.remove("puppeteer-config.json")
+            os.remove("mermaid.css")
 
         if line_infos[i].kind == LINE_TYPE_REFERENCE:
             key = f"[{line_infos[i].content['key']}]"

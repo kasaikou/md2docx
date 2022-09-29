@@ -224,7 +224,7 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
 
     paragraph = dest.add_paragraph("", "Title")
     replace_expr(config["Title"], paragraph, is_heading=True)
-    paragraph = dest.add_paragraph("", "Subtitle")
+    paragraph = dest.add_paragraph("")
     spliteds = split_jpn(replace_expr(config["Author"], paragraph))
 
     while i < len(line_infos):

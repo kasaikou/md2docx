@@ -1,5 +1,6 @@
 from typing import List, Dict, Final
 from docx import Document
+from docx.text.paragraph import Paragraph
 from docx.shared import Inches
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from io import BytesIO
@@ -165,21 +166,36 @@ replace_refered_keydict: Dict[str, str] = {}
 replace_refered_valuedict: Dict[str, str] = {}
 
 
-def replace_expr(expr: str) -> str:
+def replace_expr(expr: str, para: Paragraph, is_heading: bool = False):
     global replace_refered_keydict
     global replace_refered_valuedict
 
-    founds = set(re.findall("\[\^[^\[\]]+\]", expr))
-    for found in founds:
-        value = replace_refered_keydict.get(found)
+    prev_end = 0
+    for found in re.finditer("\[\^([^\[\]]+)\]", expr):
+        if prev_end != found.start():
+            spliteds = split_jpn(expr[prev_end:found.start()])
+            for splited in spliteds:
+                para.add_run(splited["content"]).font.name = select_font(
+                    splited["region"], is_heading=is_heading)
+
+        value = replace_refered_keydict.get(found.group(0))
         if value is None:
-            expr = expr.replace(found, "")
             continue
         index = replace_refered_valuedict[value]
         if index is None:
-            expr = expr.replace(found, "")
             continue
-        expr = expr.replace(found, f"[{index}]")
+        spliteds = split_jpn(f"[{index}]")
+        for splited in spliteds:
+            run = para.add_run(splited["content"])
+            run.font.name = select_font(splited["region"],
+                                        is_heading=is_heading)
+            run.font.superscript = True
+        prev_end = found.end()
+
+    spliteds = split_jpn(expr[prev_end:])
+    for splited in spliteds:
+        para.add_run(splited["content"]).font.name = select_font(
+            splited["region"], is_heading=is_heading)
     return expr
 
 
@@ -207,15 +223,9 @@ refereds: List[str] = []
 with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
 
     paragraph = dest.add_paragraph("", "Title")
-    spliteds = split_jpn(replace_expr(config["Title"]))
-    for splited in spliteds:
-        paragraph.add_run(splited["content"]).font.name = select_font(
-            splited["region"], True)
+    replace_expr(config["Title"], paragraph, is_heading=True)
     paragraph = dest.add_paragraph("", "Subtitle")
-    spliteds = split_jpn(replace_expr(config["Author"]))
-    for splited in spliteds:
-        paragraph.add_run(splited["content"]).font.name = select_font(
-            splited["region"], False)
+    spliteds = split_jpn(replace_expr(config["Author"], paragraph))
 
     while i < len(line_infos):
 
@@ -232,10 +242,7 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
             paragraph.add_run().add_picture(path, width=Inches(5))
             paragraph = dest.add_paragraph("")
             paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            spliteds = split_jpn(replace_expr(description))
-            for splited in spliteds:
-                paragraph.add_run(splited["content"]).font.name = select_font(
-                    splited["region"], False)
+            replace_expr(description, paragraph)
             i_image += 1
 
         if line_infos[i].kind == LINE_TYPE_EMPTY:
@@ -246,10 +253,7 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
 
         if line_infos[i].kind == LINE_TYPE_PARAGRAPH:
             paragraph = dest.add_paragraph("")
-            spliteds = split_jpn(replace_expr(line_infos[i].content["content"]))
-            for splited in spliteds:
-                paragraph.add_run(splited["content"]).font.name = select_font(
-                    splited["region"], False)
+            replace_expr(line_infos[i].content["content"], paragraph)
 
         if line_infos[i].kind == LINE_TYPE_HEADING:
 
@@ -263,12 +267,9 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
             numbering = f"{i_headings[0]}"
             for i_heading in i_headings[1:level]:
                 numbering = f"{numbering}.{i_heading}"
-            spliteds = split_jpn(
-                replace_expr(
-                    f"""{numbering}. {line_infos[i].content["content"]}"""))
-            for splited in spliteds:
-                paragraph.add_run(splited["content"]).font.name = select_font(
-                    splited["region"], True)
+            replace_expr(f"""{numbering}. {line_infos[i].content["content"]}""",
+                         paragraph,
+                         is_heading=True)
 
         if line_infos[i].kind == LINE_TYPE_LATEX:
             content = line_infos[i].content["content"]
@@ -330,10 +331,7 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
             paragraph.add_run().add_picture(filename)
             paragraph = dest.add_paragraph("")
             paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-            spliteds = split_jpn(replace_expr(description))
-            for splited in spliteds:
-                paragraph.add_run(splited["content"]).font.name = select_font(
-                    splited["region"], False)
+            replace_expr(description, paragraph)
             i_image += 1
 
             os.remove(mmd_filename)

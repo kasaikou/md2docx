@@ -11,15 +11,20 @@ import os
 import os.path
 import re
 import json
+import logging
 import regex
 import subprocess
 import sys
+
+logging.getLogger(__name__).addHandler(logging.NullHandler())
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 filepath: str = ""
 destpath: str = ""
 
 if len(sys.argv) == 1:
-    print("source markdown file is required")
+    logging.fatal("source markdown file is required")
     exit(1)
 elif len(sys.argv) == 2:
     filepath = sys.argv[1]
@@ -29,7 +34,9 @@ else:
     destpath = sys.argv[2]
 
 filepath = os.path.join(os.getcwd(), filepath)
+logger.debug(f"{filepath=}")
 destpath = os.path.join(os.getcwd(), destpath)
+logger.debug(f"{destpath=}")
 configpath = os.path.join(os.path.dirname(sys.argv[0]), "./md2docx-config.yml")
 
 with open(filepath, "rb") as f:
@@ -227,11 +234,13 @@ refereds: List[str] = []
 
 with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
 
+    logging.info("initialize generating docx file")
     paragraph = dest.add_paragraph("", "Title")
     replace_expr(config["Title"], paragraph, is_heading=True)
     paragraph = dest.add_paragraph("")
     spliteds = split_jpn(replace_expr(config["Author"], paragraph))
 
+    logging.info("begin generating docx file")
     while i < len(line_infos):
 
         progress.total = len(line_infos)

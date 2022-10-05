@@ -10,6 +10,7 @@ import yaml
 import os
 import os.path
 import re
+import json
 import regex
 import subprocess
 import sys
@@ -29,9 +30,13 @@ else:
 
 filepath = os.path.join(os.getcwd(), filepath)
 destpath = os.path.join(os.getcwd(), destpath)
+configpath = os.path.join(os.path.dirname(sys.argv[0]), "./md2docx-config.yml")
 
 with open(filepath, "rb") as f:
     markdown = f.read().decode('utf-8')
+with open(configpath, "r", encoding="utf-8") as f:
+    global_config = yaml.safe_load(f)
+print(global_config)
 lines = markdown.splitlines()
 i = 0
 
@@ -291,14 +296,10 @@ with tqdm(total=len(line_infos), desc="preparing to generate docx") as progress:
             with open(mmd_filename, "xt", encoding="utf-8") as f:
                 print(content, file=f)
             with open("puppeteer-config.json", "xt", encoding="utf-8") as f:
-                print("""
-                {
-                    "executablePath": "/usr/bin/google-chrome",
-                    "args": [
-                        "--no-sandbox"
-                    ]
-                }
-                """,
+                print(json.dumps({
+                    "executablePath": global_config["chromePath"],
+                    "args": global_config["puppeteerArgs"],
+                }),
                       file=f)
             with open("mermaid.css", "xt", encoding="utf-8") as f:
                 print("""

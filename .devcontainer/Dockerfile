@@ -70,5 +70,3 @@ RUN python3 -m pip install -r requirements.lock
 RUN python3 -m pip install \
     mypy \
     yapf
-
-COPY puppeteer-config.json .

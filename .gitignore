@@ -2,6 +2,8 @@
 *.docx
 *.bin
 *.spec
+*.mypy_cache
 __pycache__
 build
 dist
+md2docx-config.yml

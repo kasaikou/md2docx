@@ -1,8 +1,9 @@
 name: Make Release
 on:
   workflow_dispatch:
-  schedule:
-    - cron: 0 0 1 * ?
+  push:
+    branches:
+      - main
 jobs:
   update_branch:
     runs-on: ubuntu-latest
@@ -79,6 +80,18 @@ jobs:
         run: pip install -r requirements.lock
       - name: Run Pyinstaller
         run: pyinstaller --onefile md2docx.py
+      - name: Package for linux
+        if: ${{ contains(matrix.os, 'ubuntu') }}
+        run: |
+          cp config/md2docx-config.linux.yml dist/md2docx-config.yml
+      - name: Package for windows
+        if: ${{ contains(matrix.os, 'windows') }}
+        run: |
+          cp config/md2docx-config.windows.yml dist/md2docx-config.yml
+      - name: Package for macos
+        if: ${{ contains(matrix.os, 'macos') }}
+        run: |
+          cp config/md2docx-config.macos.yml dist/md2docx-config.yml
       - name: Zip archive
         uses: thedoctor0/zip-release@main
         with:
